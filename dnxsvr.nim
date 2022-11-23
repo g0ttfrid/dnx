@@ -8,9 +8,10 @@ echo "[+] Listening..."
 
 var query: string
 while true:
-    let req = waitfor socket.recvFrom(withSize)
-    let data = $req.data
-    let x = parseHexStr(data.toHex[24 .. ^1])[1 .. ^1]
+    let 
+        req = waitfor socket.recvFrom(withSize)
+        data = $req.data
+        x = parseHexStr(data.toHex[24 .. ^1])[1 .. ^1]
 
     if x.contains("quit"):
         break
@@ -21,6 +22,5 @@ try:
     let file = parseHexStr(query)
     writeFile("new.file", $file)
     echo "[+] Received: new.file (Sorry, rename it!)"
-    # echo file
 except CatchableError as e:
     echo "[!] Error: ", e.msg
