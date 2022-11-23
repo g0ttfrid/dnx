@@ -20,7 +20,7 @@ while true:
 try:
     let file = parseHexStr(query)
     writeFile("new.file", $file)
-    echo "Received: new.file (Sorry, rename it!)"
+    echo "[+] Received: new.file (Sorry, rename it!)"
     # echo file
-except:
-    echo "[!] Error!"
+except CatchableError as e:
+    echo "[!] Error: ", e.msg
