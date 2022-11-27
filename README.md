@@ -26,5 +26,5 @@ Run dnx on the target machine:
 OPSEC:
 The longer the time between requests, the more opsec!
 
-### Ref
+### Inspired by
 [Offensive Nim - dns_exfiltrate.nim](https://github.com/byt3bl33d3r/OffensiveNim/blob/master/src/dns_exfiltrate.nim)
