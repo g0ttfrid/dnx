@@ -3,8 +3,6 @@ from base64 import encode
 randomize()
 
 #[
-REF https://github.com/byt3bl33d3r/OffensiveNim/blob/master/src/dns_exfiltrate.nim
-
 TODO: 
     confirmar envio
 ]#
