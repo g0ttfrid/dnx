@@ -1,5 +1,4 @@
 import net, strutils, asyncnet, asyncdispatch
-from base64 import decode
 
 let withSize = 256
 var socket = newAsyncSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
@@ -20,7 +19,7 @@ while true:
         query.add(parseHexStr(x[0 .. ^61]))
         
 try:
-    let file = decode(query)
+    let file = parseHexStr(query)
     writeFile("new.file", $file)
     echo "[+] Received: new.file (Sorry, rename it!)"
     #echo file
