@@ -1,5 +1,4 @@
-import net, strutils, asyncnet, asyncdispatch, random
-randomize()
+import std/[net, strutils, asyncnet, asyncdispatch, sha1]
 
 let withSize = 256
 var socket = newAsyncSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
@@ -28,8 +27,10 @@ while true:
 try:
     let 
         content = parseHexStr(query)
-        filename = $rand(10000) & parseHexStr(name)
-    writeFile(filename, $content)
-    echo "[+] Received: ", filename, " [lengh: ", content.len, "]"
+        filename = parseHexStr(name)
+        hash = secureHash(content)
+    writeFile($hash & "_" & filename, content)
+    echo "[+] Received: ", filename, " [lengh: ", content.len, "][hash: ", hash, "]"
+
 except CatchableError as e:
     echo "[!] Error: ", e.msg
