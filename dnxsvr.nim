@@ -1,5 +1,5 @@
 import std/[net, strutils, asyncnet, asyncdispatch, sha1]
-import zip/zlib
+import zippy
 
 let withSize = 256
 var socket = newAsyncSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
@@ -29,7 +29,7 @@ try:
     let 
         gz = parseHexStr(query)
         filename = parseHexStr(name)
-        content = uncompress((gz), stream=RAW_DEFLATE)
+        content = uncompress(gz, dfGzip)
         hash = secureHash(content)
     writeFile($hash & "_" & filename, content)
     echo "[+] Received: ", filename, " [lengh: ", content.len, "][hash: ", hash, "]"
