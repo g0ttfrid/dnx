@@ -1,5 +1,5 @@
 # dnx
-Data exfiltration over DNS
+Data exfiltration over DNS without the need for a domain.
 
 ### Compile
 install the dependencies
